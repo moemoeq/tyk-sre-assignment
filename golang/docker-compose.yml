@@ -1,0 +1,12 @@
+version: '3.8'
+services:
+  app:
+    build:
+      context: .
+      dockerfile: Dockerfile.dev
+    container_name: tyk-sre-app-dev
+    volumes:
+      - .:/app:Z
+    ports:
+      - "8080:8080"
+    restart: unless-stopped
