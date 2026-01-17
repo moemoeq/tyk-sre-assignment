@@ -1,11 +1,11 @@
 # tyk-sre-app
 
-### Go Project
+# Go Project
 
 Original Location: https://github.com/TykTechnologies/tyk-sre-assignment/tree/main/golang
 
 
-### Development (Recommended)
+## Development (Recommended)
 
 The recommended way to run the application for development is using Docker Compose. This ensures a consistent environment with hot-reloading enabled (via [Air](https://github.com/cosmtrek/air)).
 
@@ -35,4 +35,10 @@ To run it against a real Kubernetes API server:
 To execute unit tests:
 ```bash
 go test -v ./...
+```
+
+### Creating Local Kubernetes Cluster
+
+```bash
+kind create cluster --name local-dev-cluster
 ```
