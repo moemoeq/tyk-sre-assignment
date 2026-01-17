@@ -9,6 +9,20 @@ Original Location: https://github.com/TykTechnologies/tyk-sre-assignment/tree/ma
 
 The recommended way to run the application for development is using Docker Compose. This ensures a consistent environment with hot-reloading enabled (via [Air](https://github.com/cosmtrek/air)).
 
+
+### Prepare Local Kubernetes Cluster
+
+```bash
+# If you have an existing kind cluster named 'kind-cluster'
+kind get kubeconfig --name kind-cluster > .kind-kubeconfig
+
+# Or create a new one
+kind create cluster --name kind-cluster
+kind get kubeconfig --name kind-cluster > .kind-kubeconfig
+```
+
+modify .kind-kubeconfig server field to reach the API server example `https://kind-cluster-control-plane:6443` 
+
 Run the following command to start the development server:
 
 ```bash
@@ -35,10 +49,4 @@ To run it against a real Kubernetes API server:
 To execute unit tests:
 ```bash
 go test -v ./...
-```
-
-### Creating Local Kubernetes Cluster
-
-```bash
-kind create cluster --name local-dev-cluster
 ```
