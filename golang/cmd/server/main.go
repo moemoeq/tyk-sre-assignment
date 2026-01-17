@@ -7,11 +7,16 @@ import (
 
 	"k8s.io/client-go/kubernetes"
 	"k8s.io/client-go/tools/clientcmd"
+
+	"github.com/moemoeq/tyk-sre-app/internal/config"
 )
 
 func main() {
+	config := config.Load()
+
+	fmt.Printf("APP Environment: %s\n", config.Environment)
 	kubeconfig := flag.String("kubeconfig", "", "path to kubeconfig, leave empty for in-cluster")
-	listenAddr := flag.String("address", ":8080", "HTTP server listen address")
+	listenAddr := flag.String("address", ":"+config.Port, "HTTP server listen address")
 
 	flag.Parse()
 

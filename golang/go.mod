@@ -3,6 +3,7 @@ module github.com/moemoeq/tyk-sre-app
 go 1.25
 
 require (
+	github.com/kelseyhightower/envconfig v1.4.0
 	github.com/stretchr/testify v1.8.2
 	k8s.io/apimachinery v0.26.3
 	k8s.io/client-go v0.26.3
