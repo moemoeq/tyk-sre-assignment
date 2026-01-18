@@ -28,7 +28,6 @@ func NewClient(kubeconfig string) (*Client, error) {
 	}, nil
 }
 
-// GetKubernetesVersion returns a string GitVersion of the Kubernetes server defined by the clientset.
 func GetKubernetesVersion(clientset kubernetes.Interface) (string, error) {
 	version, err := clientset.Discovery().ServerVersion()
 	if err != nil {
