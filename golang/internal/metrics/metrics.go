@@ -2,21 +2,21 @@ package metrics
 
 import (
 	"context"
-	"fmt"
 
 	"github.com/moemoeq/tyk-sre-app/internal/k8s"
 	"github.com/prometheus/client_golang/prometheus"
-	"k8s.io/client-go/kubernetes"
 )
 
 const (
-	MetricK8sAPIServerVersion = "k8s_api_server_version"
+	MetricK8sAPIServerVersion          = "k8s_api_server_version"
+	MetricK8sAPIServerReachable        = "k8s_api_server_reachable"
+	MetricK8sAPIServerDiscoverySuccess = "k8s_api_server_discovery_success"
 )
 
 type Metrics struct{}
 
 type k8sCollector struct {
-	clientset kubernetes.Interface
+	client *k8s.Client
 }
 
 func (c *k8sCollector) Describe(ch chan<- *prometheus.Desc) {
@@ -24,25 +24,48 @@ func (c *k8sCollector) Describe(ch chan<- *prometheus.Desc) {
 }
 
 func (c *k8sCollector) Collect(ch chan<- prometheus.Metric) {
-	c.collectVersion(ch)
-}
+	status := c.client.CheckConnectivity(context.Background())
 
-func (c *k8sCollector) collectVersion(ch chan<- prometheus.Metric) {
-	version, _ := k8s.GetKubernetesVersion(c.clientset)
+	// 1. Version Metric
+	version := status.Version
 	if version == "" {
-		// TODO: to find better way to hadle this.
 		version = "unknown"
-		fmt.Println("failed to get kubernetes version")
 	}
-
 	ch <- prometheus.MustNewConstMetric(
 		prometheus.NewDesc(MetricK8sAPIServerVersion, "Kubernetes API server version.", []string{"version"}, nil),
 		prometheus.GaugeValue, 1, version,
 	)
+
+	// 2. Reachability Metric
+	valReach := false
+	if status.Reachability {
+		valReach = true
+	}
+	ch <- prometheus.MustNewConstMetric(
+		prometheus.NewDesc(MetricK8sAPIServerReachable, "Kubernetes API server reachability status.", nil, nil),
+		prometheus.GaugeValue, BoolToFloat(valReach),
+	)
+
+	// 3. Discovery Metric
+	valDisc := false
+	if status.Discovery {
+		valDisc = true
+	}
+	ch <- prometheus.MustNewConstMetric(
+		prometheus.NewDesc(MetricK8sAPIServerDiscoverySuccess, "Kubernetes API server discovery success status.", nil, nil),
+		prometheus.GaugeValue, BoolToFloat(valDisc),
+	)
+}
+
+func BoolToFloat(b bool) float64 {
+	return map[bool]float64{
+		true:  1.0,
+		false: 0.0,
+	}[b]
 }
 
 // register prometheus metrics.
-func Init(ctx context.Context, reg prometheus.Registerer, clientset kubernetes.Interface) *Metrics {
-	reg.MustRegister(&k8sCollector{clientset: clientset})
+func Init(ctx context.Context, reg prometheus.Registerer, client *k8s.Client) *Metrics {
+	reg.MustRegister(&k8sCollector{client: client})
 	return &Metrics{}
 }

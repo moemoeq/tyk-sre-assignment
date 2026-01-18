@@ -10,6 +10,8 @@ import (
 	"github.com/stretchr/testify/assert"
 	appsv1 "k8s.io/api/apps/v1"
 	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
+	"k8s.io/apimachinery/pkg/version"
+	disco "k8s.io/client-go/discovery/fake"
 	"k8s.io/client-go/kubernetes/fake"
 )
 
@@ -61,4 +63,24 @@ func TestGetDeployments_Detailed(t *testing.T) {
 	assert.Len(t, deps, 1)
 	assert.Equal(t, "test-deploy", deps[0].Name)
 	assert.NotNil(t, deps[0].Spec)
+}
+
+func TestCheckK8sHealth(t *testing.T) {
+	fakeClientset := fake.NewSimpleClientset()
+	// Explicitly set empty version to trigger discovery failure
+	fakeClientset.Discovery().(*disco.FakeDiscovery).FakedServerVersion = &version.Info{}
+
+	kClient := &k8s.Client{Clientset: fakeClientset}
+	api := &API{K8sClient: kClient}
+
+	req, _ := http.NewRequest("GET", "/reachability", nil)
+	rr := httptest.NewRecorder()
+	handler := http.HandlerFunc(api.checkK8sReachability)
+	handler.ServeHTTP(rr, req)
+
+	assert.Equal(t, http.StatusServiceUnavailable, rr.Code)
+
+	var resp k8s.ReachabilityStatus
+	err := json.Unmarshal(rr.Body.Bytes(), &resp)
+	assert.NoError(t, err)
 }

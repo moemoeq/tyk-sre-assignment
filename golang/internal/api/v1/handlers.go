@@ -52,3 +52,14 @@ func (api *API) getDeployments(w http.ResponseWriter, r *http.Request) {
 
 	api.respondJSON(w, http.StatusOK, response)
 }
+
+func (api *API) checkK8sReachability(w http.ResponseWriter, r *http.Request) {
+	status := api.K8sClient.CheckConnectivity(r.Context())
+
+	httpStatus := http.StatusOK
+	if !status.Status {
+		httpStatus = http.StatusServiceUnavailable
+	}
+
+	api.respondJSON(w, httpStatus, status)
+}

@@ -48,3 +48,20 @@ func TestListDeployments(t *testing.T) {
 	assert.Len(t, d, 1)
 	assert.Equal(t, "fake-deploy", d[0].Name)
 }
+func TestCheckConnectivity(t *testing.T) {
+	ctx := context.Background()
+
+	client := &Client{
+		Clientset: fake.NewSimpleClientset(),
+	}
+	client.Clientset.Discovery().(*disco.FakeDiscovery).FakedServerVersion = &version.Info{GitVersion: "1.25.0-fake"}
+	status := client.CheckConnectivity(ctx)
+
+	// Because we use fake client, we can't check
+	// assert.True(t, status.Status)
+	// Reachability is not checked in fake client
+	// assert.True(t, status.Reachability)
+	assert.True(t, status.Discovery)
+	assert.Equal(t, "1.25.0-fake", status.Version)
+	assert.Empty(t, status.Error)
+}

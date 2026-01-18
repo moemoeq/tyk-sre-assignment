@@ -43,7 +43,7 @@ func TestMetricsHandler(t *testing.T) {
 	okClientset := fake.NewSimpleClientset()
 	okClientset.Discovery().(*disco.FakeDiscovery).FakedServerVersion = &version.Info{GitVersion: "1.25.0-fake"}
 
-	metrics.Init(context.TODO(), prometheus.DefaultRegisterer, okClientset)
+	metrics.Init(context.TODO(), prometheus.DefaultRegisterer, &k8s.Client{Clientset: okClientset})
 
 	req := httptest.NewRequest(http.MethodGet, "/metrics", nil)
 	rec := httptest.NewRecorder()
@@ -69,4 +69,9 @@ func TestMetricsHandler(t *testing.T) {
 	okVer, err := k8s.GetKubernetesVersion(okClientset)
 	assert.NoError(t, err)
 	assert.Contains(t, output, fmt.Sprintf("k8s_api_server_version{version=\"%s\"} 1", okVer))
+
+	// Cluster api server reachability
+	// Because we use fake client, we can't check reachability
+	assert.Contains(t, output, "k8s_api_server_reachable 0")
+	assert.Contains(t, output, "k8s_api_server_discovery_success 1")
 }

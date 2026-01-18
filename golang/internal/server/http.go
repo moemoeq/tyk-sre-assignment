@@ -11,7 +11,7 @@ import (
 )
 
 func New(ctx context.Context, addr string, apiV1 *v1.API) *http.Server {
-	metrics.Init(ctx, prometheus.DefaultRegisterer, apiV1.K8sClient.Clientset)
+	metrics.Init(ctx, prometheus.DefaultRegisterer, apiV1.K8sClient)
 	mux := http.NewServeMux()
 
 	h := NewHandler()

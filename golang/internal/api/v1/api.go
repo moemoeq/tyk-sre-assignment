@@ -35,6 +35,7 @@ func New(cfg *config.Config, k8sClient *k8s.Client) *API {
 // Register API routes
 func (api *API) Register(mux *http.ServeMux) {
 	mux.Handle("/deployments", api.wrap(api.getDeployments))
+	mux.Handle("/reachability", api.wrap(api.checkK8sReachability))
 }
 
 func (api *API) wrap(h http.HandlerFunc) http.Handler {
