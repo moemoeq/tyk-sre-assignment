@@ -21,6 +21,17 @@ func TestGetDeployments_Summary(t *testing.T) {
 			Name:      "test-deploy",
 			Namespace: "default",
 		},
+		Status: appsv1.DeploymentStatus{
+			ReadyReplicas:   3,
+			UpdatedReplicas: 3,
+			Conditions: []appsv1.DeploymentCondition{
+				{Type: appsv1.DeploymentAvailable, Status: "True"},
+				{Type: appsv1.DeploymentProgressing, Status: "True"},
+			},
+		},
+		Spec: appsv1.DeploymentSpec{
+			Replicas: ptr(int32(3)),
+		},
 	})
 	kClient := &k8s.Client{Clientset: fakeClientset}
 	api := &API{K8sClient: kClient}
@@ -73,6 +84,17 @@ func TestGetDeployments_LabelFilter(t *testing.T) {
 				Namespace: "default",
 				Labels:    map[string]string{"app": "a"},
 			},
+			Status: appsv1.DeploymentStatus{
+				ReadyReplicas:   3,
+				UpdatedReplicas: 3,
+				Conditions: []appsv1.DeploymentCondition{
+					{Type: appsv1.DeploymentAvailable, Status: "True"},
+					{Type: appsv1.DeploymentProgressing, Status: "True"},
+				},
+			},
+			Spec: appsv1.DeploymentSpec{
+				Replicas: ptr(int32(3)),
+			},
 		},
 		&appsv1.Deployment{
 			ObjectMeta: metav1.ObjectMeta{
@@ -97,6 +119,7 @@ func TestGetDeployments_LabelFilter(t *testing.T) {
 	assert.NoError(t, err)
 	assert.Len(t, deps, 1)
 	assert.Equal(t, "deploy-a", deps[0].Name)
+	assert.True(t, deps[0].Health)
 }
 
 func TestCheckK8sHealth(t *testing.T) {
@@ -117,4 +140,8 @@ func TestCheckK8sHealth(t *testing.T) {
 	var resp k8s.ReachabilityStatus
 	err := json.Unmarshal(rr.Body.Bytes(), &resp)
 	assert.NoError(t, err)
+}
+
+func ptr[T any](v T) *T {
+	return &v
 }

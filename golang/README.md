@@ -51,7 +51,6 @@ To execute unit tests:
 go test -v ./...
 ```
 
-
 ### API Request Example
 
 ```bash
