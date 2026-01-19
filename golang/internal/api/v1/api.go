@@ -60,7 +60,7 @@ func (a *API) respondJSON(w http.ResponseWriter, status int, payload interface{}
 
 func (a *API) respondError(w http.ResponseWriter, status int, message string) {
 	a.respondJSON(w, status, map[string]string{"error": message})
-	if a.Config.Environment == "development" {
+	if a.Config.Environment == "dev" {
 		fmt.Println("response error", message)
 	}
 }
