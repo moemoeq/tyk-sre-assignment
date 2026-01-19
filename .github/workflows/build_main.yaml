@@ -47,6 +47,6 @@ jobs:
         push: true
         file: ./golang/Dockerfile
         tags: |
-          ${env.CONTAINER_REGISTRY}/${{ github.repository_owner }}/${{ env.IMAGE_NAME }}:latest
-          ${env.CONTAINER_REGISTRY}/${{ github.repository_owner }}/${{ env.IMAGE_NAME }}:${{ steps.version.outputs.version }}
-        platforms: ${env.BUILD_PLATFORM}
+          ${{ env.CONTAINER_REGISTRY }}/${{ env.IMAGE_NAME }}:latest
+          ${{ env.CONTAINER_REGISTRY }}/${{ env.IMAGE_NAME }}:${{ steps.version.outputs.version }}
+        platforms: ${{ env.BUILD_PLATFORM }}
