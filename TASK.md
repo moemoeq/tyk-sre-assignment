@@ -6,13 +6,13 @@ As a new employee you’ve just inherited an incomplete internal tool. This tool
 You are tasked with extending this tool according to the user stories below:
 # SRE User Stories
 > (Least 2)
-- [/] As an SRE I want to know whether all the deployments in the k8s cluster have as many healthy pods as requested by the respective `Deployment` spec
+- [X] As an SRE I want to know whether all the deployments in the k8s cluster have as many healthy pods as requested by the respective `Deployment` spec
 - [ ] As an SRE I want to prevent two workloads defined by k8s namespace(s) and label selectors from being able to exchange any network activity on demand
 - [X] As an SRE I want to always know whether this tool can successfully communicate with the configured k8s API server
 
 # Application Developer Stories
 > (Least 1)
-- [ ] As an application developer I want to build this application into a container image when I push a commit to the `main` branch of its repository
+- [X] As an application developer I want to build this application into a container image when I push a commit to the `main` branch of its repository
 - [ ] As an application developer I want to be able to deploy this application into a Kubernetes cluster using Helm
 
 ---
