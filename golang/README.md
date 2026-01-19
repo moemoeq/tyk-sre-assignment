@@ -21,7 +21,7 @@ kind create cluster --name kind-cluster
 kind get kubeconfig --name kind-cluster > .kind-kubeconfig
 ```
 
-modify .kind-kubeconfig server field to reach the API server example `https://kind-cluster-control-plane:6443` 
+Modify the .kind-kubeconfig server field to reach the API server, for example: `https://kind-cluster-control-plane:6443`.
 
 Run the following command to start the development server:
 
