@@ -65,6 +65,40 @@ func TestGetDeployments_Detailed(t *testing.T) {
 	assert.NotNil(t, deps[0].Spec)
 }
 
+func TestGetDeployments_LabelFilter(t *testing.T) {
+	fakeClientset := fake.NewSimpleClientset(
+		&appsv1.Deployment{
+			ObjectMeta: metav1.ObjectMeta{
+				Name:      "deploy-a",
+				Namespace: "default",
+				Labels:    map[string]string{"app": "a"},
+			},
+		},
+		&appsv1.Deployment{
+			ObjectMeta: metav1.ObjectMeta{
+				Name:      "deploy-b",
+				Namespace: "default",
+				Labels:    map[string]string{"app": "b"},
+			},
+		},
+	)
+	kClient := &k8s.Client{Clientset: fakeClientset}
+	api := &API{K8sClient: kClient}
+
+	req, _ := http.NewRequest("GET", "/deployments?labelSelector=app=a", nil)
+	rr := httptest.NewRecorder()
+	handler := http.HandlerFunc(api.getDeployments)
+	handler.ServeHTTP(rr, req)
+
+	assert.Equal(t, http.StatusOK, rr.Code)
+
+	var deps []EnrichedDeployment
+	err := json.Unmarshal(rr.Body.Bytes(), &deps)
+	assert.NoError(t, err)
+	assert.Len(t, deps, 1)
+	assert.Equal(t, "deploy-a", deps[0].Name)
+}
+
 func TestCheckK8sHealth(t *testing.T) {
 	fakeClientset := fake.NewSimpleClientset()
 	// Explicitly set empty version to trigger discovery failure

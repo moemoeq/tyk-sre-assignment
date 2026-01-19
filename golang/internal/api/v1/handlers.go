@@ -2,11 +2,22 @@ package v1
 
 import (
 	"net/http"
+
+	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
 )
 
 func (api *API) getDeployments(w http.ResponseWriter, r *http.Request) {
 	detailed := r.URL.Query().Get("detailed") == "true"
-	deployments, err := api.K8sClient.ListDeployments(r.Context(), "")
+	namespace := r.URL.Query().Get("namespace")
+	labelSelector := r.URL.Query().Get("labelSelector")
+	fieldSelector := r.URL.Query().Get("fieldSelector")
+
+	listOptions := metav1.ListOptions{
+		LabelSelector: labelSelector,
+		FieldSelector: fieldSelector,
+	}
+
+	deployments, err := api.K8sClient.ListDeployments(r.Context(), namespace, listOptions)
 	if err != nil {
 		api.respondError(w, http.StatusInternalServerError, err.Error())
 		return
