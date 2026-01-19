@@ -43,7 +43,7 @@ func TestListDeployments(t *testing.T) {
 		Clientset: fake.NewSimpleClientset(deploy),
 	}
 
-	d, err := client.ListDeployments(ctx, "fake-namespace")
+	d, err := client.ListDeployments(ctx, "fake-namespace", metav1.ListOptions{})
 	assert.NoError(t, err)
 	assert.Len(t, d, 1)
 	assert.Equal(t, "fake-deploy", d[0].Name)

@@ -50,3 +50,25 @@ To execute unit tests:
 ```bash
 go test -v ./...
 ```
+
+### API Request Example
+
+```bash
+# Get All Deployments
+curl http://localhost:8080/api/v1/deployments
+
+# Get All Deployments with detailed information
+curl http://localhost:8080/api/v1/deployments?detailed=true
+
+# Get Deployments by namespace
+curl http://localhost:8080/api/v1/deployments?namespace=kube-system
+
+# Get Deployments by label selector
+curl http://localhost:8080/api/v1/deployments?labelSelector=k8s-app=kube-dns
+
+# Get Deployments by field selector
+curl http://localhost:8080/api/v1/deployments?fieldSelector=metadata.name=local-path-provisioner
+
+# Check k8s reachability
+curl http://localhost:8080/api/v1/reachability
+```

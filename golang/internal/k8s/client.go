@@ -81,8 +81,8 @@ func (c *Client) CheckConnectivity(ctx context.Context) ReachabilityStatus {
 }
 
 // Get List Deployments leave empty to get all
-func (c *Client) ListDeployments(ctx context.Context, namespace string) ([]appsv1.Deployment, error) {
-	deps, err := c.Clientset.AppsV1().Deployments(namespace).List(ctx, metav1.ListOptions{})
+func (c *Client) ListDeployments(ctx context.Context, namespace string, opts metav1.ListOptions) ([]appsv1.Deployment, error) {
+	deps, err := c.Clientset.AppsV1().Deployments(namespace).List(ctx, opts)
 	if err != nil {
 		return nil, err
 	}
