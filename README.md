@@ -1,22 +1,15 @@
-# tyk-sre-assignment
+# Tyk SRE Assignment
 
-This repository contains the boilerplate projects for the SRE role interview assignments. There are two projects: one for Go and one for Python respectively.
+This repository contains the solution for the Tyk SRE interview assignment.
 
-### Go Project
+## Overview
 
-Location: https://github.com/TykTechnologies/tyk-sre-assignment/tree/main/golang
+The goal of this project is to extend an existing internal tool to help the SRE team keep Kubernetes workloads reliable and secure. 
 
-In order to build the project run:
-```
-go mod tidy & go build
-```
+The work progress and stories are available in [TASK.md](./TASK.md)
 
-To run it against a real Kubernetes API server:
-```
-./tyk-sre-assignment --kubeconfig '/path/to/your/kube/conf' --address ":8080"
-```
+## Repository Structure
 
-To execute unit tests:
-```
-go test -v
-```
+- `golang/`: Contains the Go implementation of the assignment.
+- `k8s-chart/`: Helm charts for deploying the application.
+- `TASK.md`: Detailed mission and requirements for the assignment.

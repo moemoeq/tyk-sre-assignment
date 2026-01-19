@@ -1,0 +1,19 @@
+version: '3.8'
+services:
+  app:
+    build:
+      context: .
+      dockerfile: Dockerfile.dev
+    container_name: tyk-sre-app-dev
+    volumes:
+      - .:/app:Z
+      - ${KUBECONFIG_PATH:-./.kind-kubeconfig}:/root/.kube/config:ro,Z
+    ports:
+      - "8080:8080"
+    networks:
+      - kind
+    restart: unless-stopped
+
+networks:
+  kind:
+    external: true
