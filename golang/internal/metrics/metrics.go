@@ -37,23 +37,15 @@ func (c *k8sCollector) Collect(ch chan<- prometheus.Metric) {
 	)
 
 	// 2. Reachability Metric
-	valReach := false
-	if status.Reachability {
-		valReach = true
-	}
 	ch <- prometheus.MustNewConstMetric(
 		prometheus.NewDesc(MetricK8sAPIServerReachable, "Kubernetes API server reachability status.", nil, nil),
-		prometheus.GaugeValue, BoolToFloat(valReach),
+		prometheus.GaugeValue, BoolToFloat(status.Reachability),
 	)
 
 	// 3. Discovery Metric
-	valDisc := false
-	if status.Discovery {
-		valDisc = true
-	}
 	ch <- prometheus.MustNewConstMetric(
 		prometheus.NewDesc(MetricK8sAPIServerDiscoverySuccess, "Kubernetes API server discovery success status.", nil, nil),
-		prometheus.GaugeValue, BoolToFloat(valDisc),
+		prometheus.GaugeValue, BoolToFloat(status.Discovery),
 	)
 }
 
