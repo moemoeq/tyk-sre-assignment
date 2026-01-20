@@ -1,0 +1,12 @@
+apiVersion: v2
+name: tyk-sre-app
+description: A Helm chart for deploying tyk-sre-app to Kubernetes
+type: application
+version: 0.0.1
+appVersion: "0.0.3"
+keywords:
+  - sre
+  - monitoring
+  - kubernetes
+maintainers:
+  - name: moemoeq

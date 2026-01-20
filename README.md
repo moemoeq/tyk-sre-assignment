@@ -11,5 +11,5 @@ The work progress and stories are available in [TASK.md](./TASK.md)
 ## Repository Structure
 
 - `golang/`: Contains the Go implementation of the assignment.
-- `k8s-chart/`: Helm charts for deploying the application.
+- `k8s/`: Helm charts for deploying the application.
 - `TASK.md`: Detailed mission and requirements for the assignment.

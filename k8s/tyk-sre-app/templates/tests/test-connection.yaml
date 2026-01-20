@@ -1,0 +1,28 @@
+apiVersion: v1
+kind: Pod
+metadata:
+  name: "{{ include "tyk-sre-app.fullname" . }}-health-check"
+  labels:
+    {{- include "tyk-sre-app.labels" . | nindent 4 }}
+  annotations:
+    "helm.sh/hook": test
+spec:
+  containers:
+    - name: wget-check
+      image: busybox
+      command: ['/bin/sh', '-c']
+      args:
+        - |
+          echo "Testing reachability endpoint..."
+          # Fetch response
+          OUTPUT=$(wget -qO- http://{{ include "tyk-sre-app.fullname" . }}:{{ .Values.service.port }}/api/v1/reachability)
+          echo "Response: $OUTPUT"
+          # Verify status
+          if echo "$OUTPUT" | grep -q '"status":true'; then
+            echo "Health check passed!"
+            exit 0
+          else
+            echo "Health check failed: status is not true"
+            exit 1
+          fi
+  restartPolicy: Never
