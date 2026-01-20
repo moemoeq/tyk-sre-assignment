@@ -1,0 +1,73 @@
+# Default values for tyk-sre-app.
+# This is a YAML-formatted file.
+
+replicaCount: 1
+
+image:
+  repository: ghcr.io/moemoeq/tyk-sre-assignment
+  pullPolicy: IfNotPresent
+  # Overrides the image tag whose default is the chart appVersion.
+  # latest is good for development and testing
+  tag: "latest"
+
+nameOverride: ""
+fullnameOverride: ""
+
+serviceAccount:
+  # Specifies whether a service account should be created
+  create: true
+  # Annotations to add to the service account
+  annotations: {}
+  # The name of the service account to use.
+  # If not set and create is true, a name is generated using the fullname template
+  name: ""
+
+podSecurityContext:
+  runAsNonRoot: true
+  runAsUser: 65532 # distroless non-root default
+  fsGroup: 65532
+
+securityContext:
+  allowPrivilegeEscalation: false
+  capabilities:
+    drop:
+      - ALL
+  readOnlyRootFilesystem: true
+
+service:
+  type: ClusterIP
+  port: 80
+  annotations: {}
+
+ingress:
+  enabled: false
+  className: ""
+  annotations: {}
+  hosts:
+    - host: tyk-sre-app.local
+      paths:
+        - path: /
+          pathType: Prefix
+  tls: []
+
+resources:
+  limits:
+    cpu: 200m
+    memory: 256Mi
+  requests:
+    cpu: 100m
+    memory: 128Mi
+
+config:
+  # App port
+  port: "8080"
+  environment: "dev"
+  gracefulTimeout: "10"
+
+serviceMonitor:
+  enabled: false
+  # When set true then use a ServiceMonitor to configure scraping
+  additionalLabels: {}
+  # release: prometheus
+  interval: 15s
+  path: /metrics

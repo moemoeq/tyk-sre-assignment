@@ -13,7 +13,7 @@ You are tasked with extending this tool according to the user stories below:
 # Application Developer Stories
 > (Least 1)
 - [X] As an application developer I want to build this application into a container image when I push a commit to the `main` branch of its repository
-- [ ] As an application developer I want to be able to deploy this application into a Kubernetes cluster using Helm
+- [X] As an application developer I want to be able to deploy this application into a Kubernetes cluster using Helm
 
 ---
 The incomplete tool can be found here: https://github.com/TykTechnologies/tyk-sre-assignment
