@@ -5,6 +5,7 @@ import (
 	"fmt"
 
 	appsv1 "k8s.io/api/apps/v1"
+	networkingv1 "k8s.io/api/networking/v1"
 	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
 	"k8s.io/client-go/kubernetes"
 	"k8s.io/client-go/tools/clientcmd"
@@ -87,4 +88,48 @@ func (c *Client) ListDeployments(ctx context.Context, namespace string, opts met
 		return nil, err
 	}
 	return deps.Items, nil
+}
+
+// if ns is empty, it returns all across all namespaces.
+func (c *Client) ListNetworkPolicies(ctx context.Context, namespace string, opts metav1.ListOptions) ([]networkingv1.NetworkPolicy, error) {
+	pols, err := c.Clientset.NetworkingV1().NetworkPolicies(namespace).List(ctx, opts)
+	if err != nil {
+		return nil, err
+	}
+	return pols.Items, nil
+}
+
+func (c *Client) CreateNetworkPolicy(ctx context.Context, policy *networkingv1.NetworkPolicy) (*networkingv1.NetworkPolicy, error) {
+	return c.Clientset.NetworkingV1().NetworkPolicies(policy.Namespace).Create(ctx, policy, metav1.CreateOptions{})
+}
+
+// delete by name and namespace.
+func (c *Client) DeleteNetworkPolicy(ctx context.Context, namespace, name string) error {
+	return c.Clientset.NetworkingV1().NetworkPolicies(namespace).Delete(ctx, name, metav1.DeleteOptions{})
+}
+
+// Search by UID.
+// It searches in the specified namespace, or all namespaces if "namespace" is empty.
+func (c *Client) GetNetworkPolicyByUID(ctx context.Context, namespace, uid string) (*networkingv1.NetworkPolicy, error) {
+	list, err := c.ListNetworkPolicies(ctx, namespace, metav1.ListOptions{})
+	if err != nil {
+		return nil, err
+	}
+
+	for _, policy := range list {
+		if string(policy.UID) == uid {
+			return &policy, nil
+		}
+	}
+
+	return nil, fmt.Errorf("network policy with UID %s not found", uid)
+}
+
+// Delete a NetworkPolicy by UID.
+func (c *Client) DeleteNetworkPolicyByUID(ctx context.Context, namespace, uid string) error {
+	policy, err := c.GetNetworkPolicyByUID(ctx, namespace, uid)
+	if err != nil {
+		return err
+	}
+	return c.DeleteNetworkPolicy(ctx, policy.Namespace, policy.Name)
 }

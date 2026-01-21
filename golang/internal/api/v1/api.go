@@ -5,6 +5,7 @@ import (
 	"fmt"
 	"net/http"
 
+	"github.com/moemoeq/tyk-sre-app/internal/api/v1/network"
 	"github.com/moemoeq/tyk-sre-app/internal/config"
 	"github.com/moemoeq/tyk-sre-app/internal/k8s"
 	appsv1 "k8s.io/api/apps/v1"
@@ -36,6 +37,28 @@ func New(cfg *config.Config, k8sClient *k8s.Client) *API {
 func (api *API) Register(mux *http.ServeMux) {
 	mux.Handle("/deployments", api.wrap(api.getDeployments))
 	mux.Handle("/reachability", api.wrap(api.checkK8sReachability))
+
+	// TODO: refactor network route into subrouter
+	// Network Handlers
+	netHandler := &network.Handler{K8sClient: api.K8sClient}
+	mux.Handle("/network/policies", api.wrap(func(w http.ResponseWriter, r *http.Request) {
+		if r.Method == http.MethodGet {
+			netHandler.ListPolicies(w, r)
+		} else if r.Method == http.MethodDelete {
+			netHandler.DeletePolicy(w, r)
+		} else {
+			http.Error(w, "method not allowed", http.StatusMethodNotAllowed)
+		}
+	}))
+	mux.Handle("/network/block", api.wrap(func(w http.ResponseWriter, r *http.Request) {
+		if r.Method == http.MethodPost {
+			netHandler.BlockWorkloads(w, r)
+		} else if r.Method == http.MethodDelete {
+			netHandler.UnblockWorkloads(w, r)
+		} else {
+			http.Error(w, "method not allowed", http.StatusMethodNotAllowed)
+		}
+	}))
 }
 
 func (api *API) wrap(h http.HandlerFunc) http.Handler {

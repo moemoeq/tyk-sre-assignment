@@ -54,6 +54,9 @@ go test -v ./...
 ### API Request Example
 
 ```bash
+# Check k8s reachability
+curl http://localhost:8080/api/v1/reachability
+
 # Get All Deployments
 curl http://localhost:8080/api/v1/deployments
 
@@ -69,6 +72,34 @@ curl http://localhost:8080/api/v1/deployments?labelSelector=k8s-app=kube-dns
 # Get Deployments by field selector
 curl http://localhost:8080/api/v1/deployments?fieldSelector=metadata.name=local-path-provisioner
 
-# Check k8s reachability
-curl http://localhost:8080/api/v1/reachability
+# List Network Policies
+curl http://localhost:8080/api/v1/network/policies
+
+# List Network Policies with detailed information
+curl http://localhost:8080/api/v1/network/policies?detailed=true
+
+# List Network Policies by namespace
+curl http://localhost:8080/api/v1/network/policies?namespace=kube-system
+
+# Block workload
+curl -v -X POST http://localhost:8080/api/v1/network/block \
+-H "Content-Type: application/json" \
+-d '{
+  "target_a": {"namespace": "poc-ns-a", "label_selector": "app=foo"},
+  "target_b": {"namespace": "poc-ns-b", "label_selector": "app=bar"}
+}'
+# Unblock workload
+curl -v -X DELETE http://localhost:8080/api/v1/network/block \
+-H "Content-Type: application/json" \
+-d '{
+  "target_a": {"namespace": "poc-ns-a", "label_selector": "app=foo"},
+  "target_b": {"namespace": "poc-ns-b", "label_selector": "app=bar"}
+}'
+
+# DELETE Network Policy by name and namespace
+curl -v -X DELETE "http://localhost:8080/api/v1/network/policies?namespace=poc-ns-b&name=deny-from-a"
+
+# DELETE Network Policy by UID
+ curl -v -X DELETE "http://localhost:8080/api/v1/network/policies?uid=bd1c9956-e33e-4358-af18-b374f0bc02e9"
+
 ```
